@@ -36,3 +36,6 @@ form.addEventListener("submit", (e) => {
   // clear inputs
   burstTime.value = "";
 });
+
+// planning algorithms
+const fcfs = (queue) => queue.sort((a, b) => a.arrivalTime - b.arrivalTime);
