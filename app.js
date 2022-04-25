@@ -25,13 +25,17 @@ form.addEventListener("submit", (e) => {
 
   // add process to appropiate queue
   if (processType.value === "Proceso de Sistema")
-    systemQueue.push(new Process(processId++, burstTime.value, arrivalTime));
+    systemQueue.push(
+      new Process(processId++, burstTime.value, arrivalTime.value)
+    );
   else if (processType.value === "Proceso Interactivo")
     interactiveQueue.push(
-      new Process(processId++, burstTime.value, arrivalTime)
+      new Process(processId++, burstTime.value, arrivalTime.value)
     );
   else if (processType.value === "Proceso por Lotes")
-    batchQueue.push(new Process(processId++, burstTime.value, arrivalTime));
+    batchQueue.push(
+      new Process(processId++, burstTime.value, arrivalTime.value)
+    );
 
   // clear inputs
   burstTime.value = "";
