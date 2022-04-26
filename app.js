@@ -3,6 +3,7 @@ const tbody = document.querySelector("tbody");
 const burstTime = document.getElementById("burst-time");
 const processType = document.getElementById("process-type");
 const arrivalTime = document.getElementById("arrival-time");
+const animateBtn = document.getElementById("animate-btn");
 
 // global variables
 let processId = 0;
@@ -177,7 +178,60 @@ const processList = [
 const processManager = new ProcessManager(new RoundRobin(), new FCFS());
 
 // chart
-const ctx = document.getElementById("myChart");
-const config = {};
 
-const myChart = new Chart(ctx, config);
+animateBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const data = processManager.run();
+
+  // draw chart
+  let delayed;
+  const ctx = document.getElementById("myChart");
+  const config = {
+    type: "bar",
+    data: data,
+    options: {
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+      },
+      indexAxis: "y",
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: "Proceso",
+          },
+          beginAtZero: true,
+          stacked: true,
+        },
+        x: {
+          title: {
+            display: true,
+            text: "tiempo",
+          },
+          stacked: false,
+        },
+      },
+      animation: {
+        onComplete: () => {
+          delayed = true;
+        },
+        delay: (context) => {
+          let delay = 0;
+          if (
+            context.type === "data" &&
+            context.mode === " default" &&
+            !delayed
+          ) {
+            delay = context.dataIndex * 300 + context.datasetIndex * 100;
+          }
+          return delay;
+        },
+      },
+    },
+  };
+
+  const myChart = new Chart(ctx, config);
+});
