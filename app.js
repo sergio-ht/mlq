@@ -104,6 +104,11 @@ class ProcessManager {
       // get process to work on
       if (!currentProcess) {
         currentProcess = this.getWorkingProcess();
+        // if there is no process, continue
+        if (!currentProcess) {
+          time++;
+          continue;
+        }
         // check if it has a Round Robin algorithm
         rrProcess = currentProcess.type === "system";
       }
@@ -158,17 +163,18 @@ class ProcessManager {
   getWorkingProcess() {
     if (this.systemProcess.hasProcesses()) {
       return this.systemProcess.getProcess();
-    } else {
+    } else if (this.interactiveProcess.hasProcesses()) {
       return this.interactiveProcess.getProcess();
     }
+    return null;
   }
 }
 
 const processList = [
-  new Process(1, "interactive", 10, 0),
-  new Process(2, "system", 10, 0),
-  new Process(3, "interactive", 10, 0),
-  new Process(4, "system", 10, 0),
+  new Process(1, "interactive", 5, 0),
+  new Process(2, "system", 10, 15),
+  new Process(3, "interactive", 10, 15),
+  new Process(4, "system", 10, 15),
 ];
 
 const processManager = new ProcessManager(new RoundRobin(), new FCFS());
