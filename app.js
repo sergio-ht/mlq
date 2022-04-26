@@ -176,6 +176,8 @@ const processList = [
 
 const processManager = new ProcessManager(new RoundRobin(), new FCFS());
 
-processList.forEach((process) => processManager.addProcess(process));
+// chart
+const ctx = document.getElementById("myChart");
+const config = {};
 
-processManager.run();
+const myChart = new Chart(ctx, config);
