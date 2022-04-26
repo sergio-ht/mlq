@@ -7,7 +7,6 @@ const arrivalTime = document.getElementById("arrival-time");
 // global variables
 let processId = 0;
 let time = 0;
-processManager = ProcessManager(new RoundRobin(), new FCFS());
 
 // queues
 const systemQueue = [];
@@ -18,8 +17,18 @@ class Process {
     this.id = id;
     this.type = type;
     this.burstTime = burstTime;
+    this.totalTime = 0;
     this.arrivalTime = arrivalTime;
+    this.endTime = -1;
     this.isCompleted = false;
+  }
+
+  work(time) {
+    this.totalTime += 1;
+    if (this.totalTime === this.burstTime) {
+      this.isCompleted = true;
+      this.endTime = time + 1;
+    }
   }
 }
 
@@ -75,6 +84,7 @@ class RoundRobin extends PlanningAlgorithm {}
 class ProcessManager {
   constructor(systemProcess, interactiveProcess) {
     this.allProcesses = [];
+    this.completedProcesses = [];
     this.systemProcess = systemProcess;
     this.interactiveProcess = interactiveProcess;
   }
@@ -83,7 +93,9 @@ class ProcessManager {
     let time = 0;
     let completed = 0;
     let quantum = 5;
+    let currentQuantum = 0;
     let currentProcess = null;
+    let rrProcess = false;
 
     while (completed < this.allProcesses.length) {
       // insert just arrived processes
@@ -92,8 +104,39 @@ class ProcessManager {
       // get process to work on
       if (!currentProcess) {
         currentProcess = this.getWorkingProcess();
+        // check if it has a Round Robin algorithm
+        rrProcess = currentProcess.type === "system";
       }
+
+      // work on process
+      currentProcess.work(time);
+
+      // timestamps
+
+      // check it it has finished
+      if (currentProcess.isCompleted) {
+        this.completedProcesses.push(currentProcess);
+        completed++;
+        currentProcess = null;
+      } else {
+        if (currentProcess.type === "interactive") {
+          this.interactiveProcess.returnUnfinishedProcess(currentProcess);
+          currentProcess = null;
+        } else {
+          // check quantum
+          if (++currentQuantum >= quantum) {
+            this.systemProcess.returnUnfinishedProcess(currentProcess);
+            currentProcess = null;
+            currentQuantum = 0;
+          }
+        }
+      }
+
+      // increment time
+      time++;
     }
+    console.log("Finished processing");
+    console.log(this.allProcesses);
   }
 
   addProcess(process) {
@@ -121,15 +164,15 @@ class ProcessManager {
   }
 }
 
-const runtimeSelector = () => {
-  const totalProcesses = systemQueue.length + interactiveQueue.length;
-  let completed = 0;
+const processList = [
+  new Process(1, "interactive", 10, 0),
+  new Process(2, "system", 10, 0),
+  new Process(3, "interactive", 10, 0),
+  new Process(4, "system", 10, 0),
+];
 
-  while (completed < totalProcesses) {
-    // add processes that have just arrived
-    justArrivedProcesses(time);
+const processManager = new ProcessManager(new RoundRobin(), new FCFS());
 
-    // get process to work with
-    const process = getProcess();
-  }
-};
+processList.forEach((process) => processManager.addProcess(process));
+
+processManager.run();
