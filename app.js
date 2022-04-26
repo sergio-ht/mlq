@@ -6,11 +6,6 @@ const arrivalTime = document.getElementById("arrival-time");
 
 // global variables
 let processId = 0;
-let time = 0;
-
-// queues
-const systemQueue = [];
-const interactiveQueue = [];
 
 class Process {
   constructor(id, type, burstTime, arrivalTime) {
@@ -34,6 +29,8 @@ class Process {
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+
+  if (burstTime.value === "") return;
 
   // add process
   processManager.addProcess(
