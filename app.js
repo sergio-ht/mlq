@@ -17,6 +17,7 @@ class Process {
     this.arrivalTime = arrivalTime;
     this.endTime = -1;
     this.isCompleted = false;
+    this.hue = this.type === "system" ? 312 : 125;
   }
 
   work(time) {
@@ -38,8 +39,8 @@ form.addEventListener("submit", (e) => {
     new Process(
       processId++,
       processType.value === "Proceso de Sistema" ? "system" : "interactive",
-      burstTime.value,
-      arrivalTime.value
+      parseInt(burstTime.value),
+      parseInt(arrivalTime.value)
     )
   );
 
@@ -144,7 +145,6 @@ class ProcessManager {
       // increment time
       time++;
     }
-    console.log("Finihsed");
     return data;
   }
 
@@ -177,10 +177,10 @@ class ProcessManager {
 function DataSet(data) {
   this.label = ``;
   this.data = data;
-  this.backgroundColor = processList.map(
+  this.backgroundColor = processManager.allProcesses.map(
     (process) => `hsl(${process.hue}, 50%, 70%)`
   );
-  this.borderColor = processList.map(
+  this.borderColor = processManager.allProcesses.map(
     (process) => `hsl(${process.hue}, 80%, 30%)`
   );
   this.borderWidth = 3;
@@ -188,18 +188,76 @@ function DataSet(data) {
   this.borderRadius = 15;
 }
 
-const processList = [
-  new Process(1, "interactive", 10, 0),
-  new Process(2, "system", 10, 0),
-];
-
 const processManager = new ProcessManager(new RoundRobin(), new FCFS());
-
-processList.forEach((process) => processManager.addProcess(process));
 
 // chart
 
 animateBtn.addEventListener("click", (e) => {
   e.preventDefault();
+
   const timestamps = processManager.run();
+  const datasets = timestamps.map((ts) => new DataSet(ts));
+
+  const data = {
+    labels: processManager.allProcesses.map((process) => process.id),
+    datasets: datasets,
+  };
+
+  // config
+  let delayed;
+  const config = {
+    type: "bar",
+    data,
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "MLQ",
+          font: {
+            weight: "bold",
+            size: 20,
+          },
+        },
+        legend: {
+          display: false,
+        },
+      },
+      indexAxis: "y",
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: "Proceso",
+          },
+          beginAtZero: true,
+          stacked: true,
+        },
+        x: {
+          title: {
+            display: true,
+            text: "tiempo",
+          },
+          stacked: false,
+        },
+      },
+      animation: {
+        onComplete: () => {
+          delayed = true;
+        },
+        delay: (context) => {
+          let delay = 0;
+          if (
+            context.type === "data" &&
+            context.mode === " default" &&
+            !delayed
+          ) {
+            delay = context.dataIndex * 300 + context.datasetIndex * 100;
+          }
+          return delay;
+        },
+      },
+    },
+  };
+
+  const myChart = new Chart(document.getElementById("myChart"), config);
 });
