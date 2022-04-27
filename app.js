@@ -94,6 +94,7 @@ class ProcessManager {
     let currentQuantum = 0;
     let currentProcess = null;
     let rrProcess = false;
+    const data = [];
 
     while (completed < this.allProcesses.length) {
       // insert just arrived processes
@@ -115,6 +116,11 @@ class ProcessManager {
       currentProcess.work(time);
 
       // timestamps
+      data.push(
+        this.allProcesses.map((process) =>
+          process.id === currentProcess.id ? [time, time + 1] : null
+        )
+      );
 
       // check it it has finished
       if (currentProcess.isCompleted) {
@@ -138,8 +144,8 @@ class ProcessManager {
       // increment time
       time++;
     }
-    console.log("Finished processing");
-    console.log(this.allProcesses);
+    console.log("Finihsed");
+    return data;
   }
 
   addProcess(process) {
@@ -168,70 +174,32 @@ class ProcessManager {
   }
 }
 
+function DataSet(data) {
+  this.label = ``;
+  this.data = data;
+  this.backgroundColor = processList.map(
+    (process) => `hsl(${process.hue}, 50%, 70%)`
+  );
+  this.borderColor = processList.map(
+    (process) => `hsl(${process.hue}, 80%, 30%)`
+  );
+  this.borderWidth = 3;
+  this.borderSkipped = false;
+  this.borderRadius = 15;
+}
+
 const processList = [
-  new Process(1, "interactive", 5, 0),
-  new Process(2, "system", 10, 15),
-  new Process(3, "interactive", 10, 15),
-  new Process(4, "system", 10, 15),
+  new Process(1, "interactive", 10, 0),
+  new Process(2, "system", 10, 0),
 ];
 
 const processManager = new ProcessManager(new RoundRobin(), new FCFS());
+
+processList.forEach((process) => processManager.addProcess(process));
 
 // chart
 
 animateBtn.addEventListener("click", (e) => {
   e.preventDefault();
-
-  const data = processManager.run();
-
-  // draw chart
-  let delayed;
-  const ctx = document.getElementById("myChart");
-  const config = {
-    type: "bar",
-    data: data,
-    options: {
-      plugins: {
-        legend: {
-          position: "bottom",
-        },
-      },
-      indexAxis: "y",
-      scales: {
-        y: {
-          title: {
-            display: true,
-            text: "Proceso",
-          },
-          beginAtZero: true,
-          stacked: true,
-        },
-        x: {
-          title: {
-            display: true,
-            text: "tiempo",
-          },
-          stacked: false,
-        },
-      },
-      animation: {
-        onComplete: () => {
-          delayed = true;
-        },
-        delay: (context) => {
-          let delay = 0;
-          if (
-            context.type === "data" &&
-            context.mode === " default" &&
-            !delayed
-          ) {
-            delay = context.dataIndex * 300 + context.datasetIndex * 100;
-          }
-          return delay;
-        },
-      },
-    },
-  };
-
-  const myChart = new Chart(ctx, config);
+  const timestamps = processManager.run();
 });
