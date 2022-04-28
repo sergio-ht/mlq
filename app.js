@@ -66,6 +66,26 @@ function addProcessToTable(process) {
   tbody.appendChild(tr);
 }
 
+function displayHiddenElements() {
+  const hiddenTable = document.querySelectorAll(".hidden-table");
+  hiddenTable.forEach((element) => element.classList.remove("hidden-table"));
+}
+
+function updateTable() {
+  const rows = tbody.getElementsByTagName("tr");
+  const cols = ["endTime"];
+
+  let i = 0;
+  for (let row of rows) {
+    for (let col of cols) {
+      const td = document.createElement("td");
+      td.textContent = processManager.completedProcesses[i][col];
+      row.appendChild(td);
+    }
+    i++;
+  }
+}
+
 // planning algorithms
 
 class PlanningAlgorithm {
@@ -215,6 +235,9 @@ animateBtn.addEventListener("click", (e) => {
 
   const timestamps = processManager.run();
   const datasets = timestamps.map((ts) => new DataSet(ts));
+
+  displayHiddenElements();
+  updateTable();
 
   const data = {
     labels: processManager.allProcesses.map((process) => process.id),
