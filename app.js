@@ -44,9 +44,27 @@ form.addEventListener("submit", (e) => {
     )
   );
 
+  // add process to table
+  addProcessToTable(
+    processManager.allProcesses[processManager.allProcesses.length - 1]
+  );
+
   // clear inputs
   burstTime.value = "";
 });
+
+function addProcessToTable(process) {
+  const tr = document.createElement("tr");
+  const cols = ["id", "burstTime", "arrivalTime", "type"];
+
+  cols.forEach((col) => {
+    const td = document.createElement("td");
+    td.innerHTML = process[col];
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+}
 
 // planning algorithms
 
