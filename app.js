@@ -1,7 +1,6 @@
 const form = document.querySelector("form");
 const tbody = document.querySelector("tbody");
 const burstTime = document.getElementById("burst-time");
-const processType = document.getElementById("process-type");
 const arrivalTime = document.getElementById("arrival-time");
 const animateBtn = document.getElementById("animate-btn");
 
@@ -38,7 +37,7 @@ form.addEventListener("submit", (e) => {
   processManager.addProcess(
     new Process(
       processId++,
-      processType.value === "Proceso de Sistema" ? "system" : "interactive",
+      document.querySelector('input[name="process-type"]:checked').value,
       parseInt(burstTime.value),
       parseInt(arrivalTime.value)
     )

@@ -50,10 +50,29 @@
               </div>
               <div class="form-group">
                 <label>Tipo de proceso</label>
-                <select class="form-control" id="process-type">
-                  <option>Proceso de Sistema</option>
-                  <option>Proceso Interactivo</option>
-                </select>
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  type="radio"
+                  name="process-type"
+                  class="form-check-input"
+                  value="system"
+                  checked
+                />
+                <label for="" class="form-check-label"
+                  >Proceso de Sistema</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  type="radio"
+                  name="process-type"
+                  class="form-check-input"
+                  value="interactive"
+                />
+                <label for="" class="form-check-label"
+                  >Proceso Interactivo</label
+                >
               </div>
               <div class="form-group">
                 <input class="btn btn-info" type="submit" value="Agregar" />
@@ -79,7 +98,9 @@
         </div>
       </div>
       <div class="row">
-        <canvas id="myChart"></canvas>
+        <div class="chart-container">
+          <canvas id="myChart"></canvas>
+        </div>
       </div>
     </div>
   </body>
